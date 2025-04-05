@@ -38,8 +38,8 @@ ping api.${REGION}.cbu.rackspace.net
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Get API Token
-$username = <username>
-$apiKey = <api_key>
+$username = "<username>"
+$apiKey = "<api_key>"
 $authUrl = 'https://identity.api.rackspacecloud.com/v2.0/tokens'
 $authUrlLon = 'https://lon.identity.api.rackspacecloud.com/v2.0/tokens'
 
