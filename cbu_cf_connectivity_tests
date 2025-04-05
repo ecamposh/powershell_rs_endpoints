@@ -86,3 +86,13 @@ $token = $authResponse.access.token.id
 
 
 
+------------------------------------------------------------------------------------------------------------------
+
+
+FLAVOR (default raxcloudserver): Possible values are privatecloud, raxcloudserver, and personalmachine.
+​
+msiexec /i driveclient-latest.msi /qn /l*v %tmp%\install-driveclient-latest.log APIUSER=${username} APIKEY=${api_key} APIHOSTNAME=api.${region}.cbu.rackspace.net DATACENTER=${region} FLAVOR=privatecloud
+
+
+
+
