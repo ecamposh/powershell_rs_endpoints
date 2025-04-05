@@ -1,0 +1,88 @@
+
+Note: For London region --> rse.drivesrvr.co.uk, api.drivesrvr.co.uk
+
+Note: For London region --> lon.identity.api.rackspacecloud.com
+
+Region DC
+ORD    ord1
+DFW    dfw1
+IAD    iad3
+LON    lon3
+SYD    syd2
+HKG    hkg1
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Invoke-WebRequest -Uri "https://identity.api.rackspacecloud.com" -UseBasicParsing
+
+Invoke-WebRequest -Uri "https://rse.drivesrvr.com/health" -OutFile "C:\healh.txt"
+
+Invoke-WebRequest -Uri "https://api.drivesrvr.com/v1.0/help/apihealth" -OutFile "C:\apihealh.txt"
+
+Invoke-WebRequest -Uri "https://api.${region}.cbu.rackspace.net/v1.0/help/apihealth" -OutFile "C:\apihealh.txt"
+
+Test-NetConnection -ComputerName api.${region}.cbu.rackspace.net -Port 443
+
+Test-NetConnection -ComputerName api.drivesrvr.com -Port 443
+
+Test-NetConnection -ComputerName rse.drivesrvr.com -Port 443
+
+Test-NetConnection -ComputerName storage101.${DC}.clouddrive.com -Port 443
+
+Test-NetConnection -ComputerName snet-storage101.${DC}.clouddrive.com -Port 443
+
+ping ${REGION}.backup.api.rackspacecloud.com
+
+ping api.${REGION}.cbu.rackspace.net
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Get API Token
+$username = <username>
+$apiKey = <api_key>
+$authUrl = 'https://identity.api.rackspacecloud.com/v2.0/tokens'
+$authUrlLon = 'https://lon.identity.api.rackspacecloud.com/v2.0/tokens'
+
+# Authenticate and get the token
+$authData = @{
+    auth = @{
+        "RAX-KSKEY:apiKeyCredentials" = @{
+            username = $username
+            apiKey = $apiKey
+        }
+    }
+}
+
+$authResponse = Invoke-RestMethod -Uri $authUrl -Method Post -Body ($authData | ConvertTo-Json) -ContentType 'application/json'
+
+$token = $authResponse.access.token.id
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+1. Open a Command Prompt by right clicking on it and "Run As Administrator".
+
+2. Query both services, to see the status they are in:
+     A. sc query driveclient
+     B. sc query upgradercbusvc
+       *If one or both of these are not installed, and you can skip that one.
+
+3. Stop any services that are running from command prompt.
+     A. sc stop driveclient
+     B. sc stop upgradercbusvc
+       *This will show "STATE : 3 STOP_PENDING". Run the 'sc query' commands (step 2 above) for the appropriate service(s), until "STATE : 1 STOPPED".
+
+4. Once the service(s) are stopped, we need to delete them out of the Service Manager
+     A. sc delete driveclient
+     B. sc delete upgradercbusvc
+       *This should show: "[SC] DeleteService SUCCESS"
+        
+5. Delete the following directories, and all sub directories/files:
+            C:\Program Files\DriveClient
+                del /S /F "C:\Program Files\DriveClient"
+                del /S /F "C:\ProgramData\DriveClient"
+
+6. Remove registry keys
+     All registry keys are stored in HKEY_LOCAL_MACHINE\SOFTWARE\Rackspace\CloudBackup
+
+
+
